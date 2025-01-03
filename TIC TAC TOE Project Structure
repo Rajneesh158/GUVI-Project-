@@ -1,0 +1,7 @@
+- index.html
+- style.css
+- script.js
+- server.js (or app.py for Python)
+- db/
+  - tic_tac_toe.db
+- package.json (for Node.js) / requirements.txt (for Python)
