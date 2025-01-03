@@ -1,0 +1,6 @@
+CREATE TABLE games (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    playerX TEXT,
+    playerO TEXT,
+    winner TEXT
+);
