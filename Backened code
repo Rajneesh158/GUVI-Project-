@@ -1,0 +1,55 @@
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
+const app = express();
+
+app.use(bodyParser.json());
+app.use(express.static(__dirname));
+
+// Connect to SQLite database
+const db = new sqlite3.Database('./db/tic_tac_toe.db', (err) => {
+    if (err) {
+        console.error('Error connecting to database:', err.message);
+    } else {
+        console.log('Connected to SQLite database.');
+    }
+});
+
+// Create table
+db.run(`CREATE TABLE IF NOT EXISTS games (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    playerX TEXT,
+    playerO TEXT,
+    winner TEXT
+)`);
+
+// Save game result
+app.post('/save-game', (req, res) => {
+    const { playerX, playerO, winner } = req.body;
+    db.run(`INSERT INTO games (playerX, playerO, winner) VALUES (?, ?, ?)`, 
+        [playerX, playerO, winner],
+        function (err) {
+            if (err) {
+                res.status(500).json({ error: err.message });
+            } else {
+                res.json({ id: this.lastID });
+            }
+        });
+});
+
+// Fetch game history
+app.get('/games', (req, res) => {
+    db.all(`SELECT * FROM games`, [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(rows);
+        }
+    });
+});
+
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
